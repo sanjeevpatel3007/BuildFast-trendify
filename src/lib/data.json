@@ -1,0 +1,94 @@
+[
+    {
+      "id": "1",
+      "title": "Cinematic Bollywood Portrait",
+      "description": "abc",
+      "prompt": "Generate a 4K HD, realistic portrait of a young Indian woman wearing a traditional red saree with gold embroidery. Use the exact face from the uploaded image. She should be standing in a festive, cinematic setting with warm decorative lighting and blurred colorful drapes in the background. Her jewelry should include a necklace, earrings, rings, and bangles. The pose should be elegant and graceful, with a soft, confident expression. Maintain cinematic lighting, depth, and vibrant colors for a professional portrait look.",
+      "image": "/trend/cinematic.png",
+      "category": "AI",
+      "order": 1,
+      "createdAt": "2025-09-18"
+    },
+    {
+      "id": "2",
+      "title": "Saree Vision",
+      "description": "abc",
+      "prompt": "Convert, 4k HD realistic, A stunning portrait of a young Indian woman with long, dark, wavy hair cascading over her shoulders. She is wearing a p translucent, elegant black saree draped over one shoulder, revealing a fitted blouse underneath.White flowers are tucked behind her right ear. She is looking slightly to her right, with a soft, serene expression. I want same face as luploaded no alternation 100 percent same. The background is a plain, warm-toned wall, illuminated by a warm light source from the right, creating a distinct, soft-edged shadow of her profile and hair on the wall behind her. The overall mood is retro and artistic.",
+      "image": "/trend/saree-portrait.png",
+      "category": "AI",
+      "order": 2,
+      "createdAt": "2025-09-17"
+    },
+    {
+        "id": "3",
+        "title": "Navratri Dream",
+        "description": "A Pinterest-inspired Navratri look reminiscent of Deepika Padukone's character in 'Ramleela', featuring a red ghagra choli with a black dupatta, flowers in her curls, and a romantic windy environment. The setting includes deep shadows, dramatic contrast, and warm golden lighting against a minimalist, textured wall, with a moody yet calm and introspective expression.",
+        "prompt": "in a perfect Navratri dress red color ghagra choli with black dupatta Pinteresty aesthetic look. It must feel like a nagada baje song deepika character movie ramleela with small flower tucked visibly into her curls and romanticising windy environment. The girl is standing against a solid wall deep shadows and contrast drama, creating a mysterious and artistic atmosphere where the lighting is warm with a golden tones of evoking a sunset or golden hour glow.The background is minimalist and slightly textured the expression on her face is moody, calm yet happy and introspective.",
+        "image": "/trend/ramleela.png",
+        "category": "AI",
+        "order": 3,
+        "createdAt": "2025-09-17"
+      },
+      {
+        "id": "4",
+        "title": "Dhaka Colossus",
+        "description": "A hyper-realistic giant statue, based on the provided photo, under construction in a Dhaka roundabout. Surrounded by scaffolding and workers, with exposed metal framework and finished sections. The vibrant background captures Dhaka city life: crowded streets, rickshaws, buses, street vendors, billboards, and messy electric wires under a bright daytime sky, creating a bustling, lively atmosphere.",
+        "prompt": "Create a giant hyper-realistic statue based on the given photo, keeping the original face exactly the same without changes. The statue stands tall in the middle of a roundabout in Dhaka, near a famous historical landmark. The statue is still under construction, surrounded by scaffolding, with many construction workers in yellow helmets and orange vests climbing, welding, and working on it. Parts of the statue's body are still exposed metal framework, while other sections are already detailed and finished. The background shows the realistic atmosphere of Dhaka city: crowded streets with colorful rickshaws, packed buses, and small cars circling the roundabout. Street vendors with tea stalls, fruit carts, and colorful umbrellas line the roadside. Shop signs, big billboards, and messy hanging electric wires crisscross above the streets, creating the typical Dhaka city vibe. The bright daytime sky shines above, with tropical trees and a bustling, lively atmosphere. Style: photorealistic, vibrant, and full of life.",
+        "image": "/trend/dhaka-colossus.png",
+        "category": "AI",
+        "order": 4,
+        "createdAt": "2025-09-17"
+      },
+      {
+        "id": "5",
+        "title": "Saree Vision",
+        "description": "abc",
+        "prompt": "Convert, 4k HD realistic, A stunning portrait of a young Indian woman with long, dark, wavy hair cascading over her shoulders. She is wearing a p translucent, elegant black saree draped over one shoulder, revealing a fitted blouse underneath.White flowers are tucked behind her right ear. She is looking slightly to her right, with a soft, serene expression. I want same face as luploaded no alternation 100 percent same. The background is a plain, warm-toned wall, illuminated by a warm light source from the right, creating a distinct, soft-edged shadow of her profile and hair on the wall behind her. The overall mood is retro and artistic.",
+        "image": "/trend/saree-portrait.png",
+        "category": "AI",
+        "order": 2,
+        "createdAt": "2025-09-17"
+      },
+      {
+          "id": "6",
+          "title": "Navratri Dream",
+          "description": "A Pinterest-inspired Navratri look reminiscent of Deepika Padukone's character in 'Ramleela', featuring a red ghagra choli with a black dupatta, flowers in her curls, and a romantic windy environment. The setting includes deep shadows, dramatic contrast, and warm golden lighting against a minimalist, textured wall, with a moody yet calm and introspective expression.",
+          "prompt": "in a perfect Navratri dress red color ghagra choli with black dupatta Pinteresty aesthetic look. It must feel like a nagada baje song deepika character movie ramleela with small flower tucked visibly into her curls and romanticising windy environment. The girl is standing against a solid wall deep shadows and contrast drama, creating a mysterious and artistic atmosphere where the lighting is warm with a golden tones of evoking a sunset or golden hour glow.The background is minimalist and slightly textured the expression on her face is moody, calm yet happy and introspective.",
+          "image": "/trend/ramleela.png",
+          "category": "AI",
+          "order": 3,
+          "createdAt": "2025-09-17"
+        },
+        {
+            "id": "7",
+            "title": "Dhaka Colossus",
+            "description": "A hyper-realistic giant statue, based on the provided photo, under construction in a Dhaka roundabout. Surrounded by scaffolding and workers, with exposed metal framework and finished sections. The vibrant background captures Dhaka city life: crowded streets, rickshaws, buses, street vendors, billboards, and messy electric wires under a bright daytime sky, creating a bustling, lively atmosphere.",
+            "prompt": "Create a giant hyper-realistic statue based on the given photo, keeping the original face exactly the same without changes. The statue stands tall in the middle of a roundabout in Dhaka, near a famous historical landmark. The statue is still under construction, surrounded by scaffolding, with many construction workers in yellow helmets and orange vests climbing, welding, and working on it. Parts of the statue's body are still exposed metal framework, while other sections are already detailed and finished. The background shows the realistic atmosphere of Dhaka city: crowded streets with colorful rickshaws, packed buses, and small cars circling the roundabout. Street vendors with tea stalls, fruit carts, and colorful umbrellas line the roadside. Shop signs, big billboards, and messy hanging electric wires crisscross above the streets, creating the typical Dhaka city vibe. The bright daytime sky shines above, with tropical trees and a bustling, lively atmosphere. Style: photorealistic, vibrant, and full of life.",
+            "image": "/trend/dhaka-colossus.png",
+            "category": "AI",
+            "order": 4,
+            "createdAt": "2025-09-17"
+          },
+          {
+            "id": "8",
+            "title": "Saree Vision",
+            "description": "abc",
+            "prompt": "Convert, 4k HD realistic, A stunning portrait of a young Indian woman with long, dark, wavy hair cascading over her shoulders. She is wearing a p translucent, elegant black saree draped over one shoulder, revealing a fitted blouse underneath.White flowers are tucked behind her right ear. She is looking slightly to her right, with a soft, serene expression. I want same face as luploaded no alternation 100 percent same. The background is a plain, warm-toned wall, illuminated by a warm light source from the right, creating a distinct, soft-edged shadow of her profile and hair on the wall behind her. The overall mood is retro and artistic.",
+            "image": "/trend/saree-portrait.png",
+            "category": "AI",
+            "order": 2,
+            "createdAt": "2025-09-17"
+          },
+          {
+              "id": "9",
+              "title": "Navratri Dream",
+              "description": "A Pinterest-inspired Navratri look reminiscent of Deepika Padukone's character in 'Ramleela', featuring a red ghagra choli with a black dupatta, flowers in her curls, and a romantic windy environment. The setting includes deep shadows, dramatic contrast, and warm golden lighting against a minimalist, textured wall, with a moody yet calm and introspective expression.",
+              "prompt": "in a perfect Navratri dress red color ghagra choli with black dupatta Pinteresty aesthetic look. It must feel like a nagada baje song deepika character movie ramleela with small flower tucked visibly into her curls and romanticising windy environment. The girl is standing against a solid wall deep shadows and contrast drama, creating a mysterious and artistic atmosphere where the lighting is warm with a golden tones of evoking a sunset or golden hour glow.The background is minimalist and slightly textured the expression on her face is moody, calm yet happy and introspective.",
+              "image": "/trend/ramleela.png",
+              "category": "AI",
+              "order": 3,
+              "createdAt": "2025-09-17"
+            }
+  
+  ]
+  
