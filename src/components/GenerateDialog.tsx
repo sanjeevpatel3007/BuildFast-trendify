@@ -29,6 +29,7 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
     const [error, setError] = useState<string | null>(null);
     const [imageLoadError, setImageLoadError] = useState(false);
     const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
+    const [selectedAPI, setSelectedAPI] = useState<'google' | 'seedream'>('seedream');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Create floating animation elements
@@ -43,8 +44,16 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
                 duration: Math.random() * 12 + 18,
             }));
             setFloatingElements(elements);
+            
+            // Debug: Log trend data when dialog opens
+            // console.log(' Dialog opened for trend:', {
+            //     title: trend.title,
+            //     prompt: trend.prompt,
+            //     hasPrompt: !!trend.prompt,
+            //     promptLength: trend.prompt?.length || 0
+            // });
         }
-    }, [isOpen]);
+    }, [isOpen, trend]);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -54,75 +63,221 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
         }
     };
 
-    const handleGenerate = async () => {
-        if (!trend.prompt) {
-            setError('No prompt available');
-            return;
+    // generate with openai
+    // const handleGenerate = async () => {
+    //     if (!trend.prompt) {
+    //         setError('No prompt available');
+    //         return;
+    //     }
+
+    //     setIsGenerating(true);
+    //     setError(null);
+
+    //     try {
+    //         const requestBody: { prompt: string; image?: string } = {
+    //             prompt: trend.prompt
+    //         };
+
+    //         if (selectedFile) {
+    //             const imageBase64 = await new Promise<string>((resolve, reject) => {
+    //                 const reader = new FileReader();
+    //                 reader.onload = () => {
+    //                     const result = reader.result as string;
+    //                     resolve(result);
+    //                 };
+    //                 reader.onerror = reject;
+    //                 reader.readAsDataURL(selectedFile);
+    //             });
+
+    //             requestBody.image = imageBase64;
+    //         } else {
+    //             setError('Please upload an image to generate a new one');
+    //             setIsGenerating(false);
+    //             return;
+    //         }
+
+    //         const response = await fetch('/api/generate', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(requestBody),
+    //         });
+
+    //         const data = await response.json();
+    //         console.log('API Response:', data);
+
+    //         if (!response.ok) {
+    //             if (data.error) {
+    //                 throw new Error(data.error);
+    //             } else {
+    //                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    //             }
+    //         }
+
+    //         if (data.success && data.generatedImage) {
+    //             console.log('Setting generated image:', data.generatedImage.substring(0, 100) + '...');
+    //             setGeneratedImage(data.generatedImage);
+    //             setImageLoadError(false);
+    //         } else if (data.error) {
+    //             throw new Error(data.error);
+    //         } else {
+    //             console.error('No image data found in response:', data);
+    //             throw new Error('No image received from the API');
+    //         }
+    //     } catch (err) {
+    //         const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+    //         setError(errorMessage);
+    //         console.error('Generation error:', err);
+    //     } finally {
+    //         setIsGenerating(false);
+    //     }
+    // };
+
+// ✅ Function to call Google API and generate image
+const handleGenerateGoogle = async () => {
+    if (!trend.prompt) {
+      setError('No prompt available');
+      return;
+    }
+
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      const requestBody: { prompt: string; image?: string } = {
+        prompt: trend.prompt
+      };
+
+      if (selectedFile) {
+        const imageBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(selectedFile);
+        });
+
+        requestBody.image = imageBase64;
+      } else {
+        setError('Please upload an image to generate a new one');
+        setIsGenerating(false);
+        return;
+      }
+
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log('Google API Response:', data);
+
+      if (!response.ok) {
+        if (data.error) {
+          throw new Error(data.error);
+        } else {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+      }
 
-        setIsGenerating(true);
-        setError(null);
+      if (data.success && data.generatedImage) {
+        console.log('🎉 Google API: Image generated successfully!');
+        console.log('Image data length:', data.generatedImage.length);
+        setGeneratedImage(data.generatedImage);
+        setImageLoadError(false);
+      } else if (data.error) {
+        throw new Error(data.error);
+      } else {
+        console.error('❌ Google API: No image data found in response:', data);
+        throw new Error('No image received from the Google API');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(errorMessage);
+      console.error('Google Generation error:', err);
+    } finally {
+      setIsGenerating(false);
+    }
+};
 
-        try {
-            const requestBody: { prompt: string; image?: string } = {
-                prompt: trend.prompt
-            };
+// ✅ Function to call Seedream API and generate image
+const handleGenerateSeedream = async () => {
+    // 1. Check if we have a prompt
+    if (!trend.prompt) {
+      setError('No prompt available');
+      return;
+    }
+  
+    setIsGenerating(true);
+    setError(null);
+  
+    try {
+      // 2. Build request body for Seedream
+      const requestBody: {
+        prompt: string;
+        imageUrls: string[];
+      } = {
+        prompt: trend.prompt,
+        // ✅ Use uploaded file or demo image
+        imageUrls: selectedFile 
+          ? [URL.createObjectURL(selectedFile)] // Use uploaded file (will be converted to demo image server-side)
+          : ["https://storage.googleapis.com/falserverless/example_inputs/seedream4_edit_input_1.png"], // Demo image
+      };
+  
+      // 3. Call your Next.js API route
+      const response = await fetch('/api/seedream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+  
+      const data = await response.json();
+      console.log('Seedream API Response:', data);
+  
+      // 4. Handle errors
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}`);
+      }
+  
+      // 5. If success → set generated image
+      if (data.success && data.images?.length > 0) {
+        const imageUrl = data.images[0].url;
+        console.log("🎉 Image generated successfully! URL:", imageUrl);
+        setGeneratedImage(imageUrl);
+        setImageLoadError(false);
+      } else {
+        console.error("❌ No images in response:", data);
+        throw new Error(data.error || 'No image received from Seedream');
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(errorMessage);
+      console.error('Seedream Generation error:', err);
+    } finally {
+      // 6. Always reset loading
+      setIsGenerating(false);
+    }
+};
 
-            if (selectedFile) {
-                const imageBase64 = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        const result = reader.result as string;
-                        resolve(result);
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(selectedFile);
-                });
-
-                requestBody.image = imageBase64;
-            } else {
-                setError('Please upload an image to generate a new one');
-                setIsGenerating(false);
-                return;
-            }
-
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            const data = await response.json();
-            console.log('API Response:', data);
-
-            if (!response.ok) {
-                if (data.error) {
-                    throw new Error(data.error);
-                } else {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-            }
-
-            if (data.success && data.generatedImage) {
-                console.log('Setting generated image:', data.generatedImage.substring(0, 100) + '...');
-                setGeneratedImage(data.generatedImage);
-                setImageLoadError(false);
-            } else if (data.error) {
-                throw new Error(data.error);
-            } else {
-                console.error('No image data found in response:', data);
-                throw new Error('No image received from the API');
-            }
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-            setError(errorMessage);
-            console.error('Generation error:', err);
-        } finally {
-            setIsGenerating(false);
-        }
-    };
+// ✅ Main generate function - switches between APIs
+const handleGenerate = () => {
+    console.log(' Using API:', selectedAPI);
+    console.log(' Prompt from trend:', trend.prompt);
+    
+    if (selectedAPI === 'google') {
+        handleGenerateGoogle();
+    } else {
+        handleGenerateSeedream();
+    }
+};
+  
 
     const handleDownload = () => {
         if (generatedImage) {
@@ -312,8 +467,49 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
 
 
 
+                                {/* Debug Info */}
+                                {/* <div className="pt-4">
+                                    <div className="bg-yellow-100 rounded-2xl border-4 border-yellow-500 p-4 shadow-xl">
+                                        <h4 className="text-lg font-black text-yellow-800 mb-2 text-center">🔍 Debug Info</h4>
+                                        <div className="text-sm text-yellow-700">
+                                            <p><strong>Prompt:</strong> {trend.prompt ? '✅ Available' : '❌ Missing'}</p>
+                                            <p><strong>Length:</strong> {trend.prompt?.length || 0} characters</p>
+                                            <p><strong>API:</strong> {selectedAPI}</p>
+                                        </div>
+                                    </div>
+                                </div> */}
+
+                                {/* API Selection */}
+                                <div className="pt-4">
+                                    <div className="bg-white rounded-2xl border-4 border-purple-500 p-4 shadow-xl">
+                                        <h4 className="text-lg font-black text-gray-800 mb-4 text-center">🤖 Choose AI Engine</h4>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setSelectedAPI('seedream')}
+                                                className={`flex-1 py-3 px-4 rounded-xl font-black text-sm transition-all duration-300 ${
+                                                    selectedAPI === 'seedream'
+                                                        ? 'bg-blue-500 text-white border-4 border-white shadow-lg'
+                                                        : 'bg-gray-200 text-gray-700 border-2 border-gray-300'
+                                                }`}
+                                            >
+                                             Seedream
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedAPI('google')}
+                                                className={`flex-1 py-3 px-4 rounded-xl font-black text-sm transition-all duration-300 ${
+                                                    selectedAPI === 'google'
+                                                        ? 'bg-green-500 text-white border-4 border-white shadow-lg'
+                                                        : 'bg-gray-200 text-gray-700 border-2 border-gray-300'
+                                                }`}
+                                            >
+                                             Google
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Generate Button */}
-                                <div className="pt-1">
+                                <div className="pt-4">
                                     <Button
                                         onClick={handleGenerate}
                                         disabled={isGenerating || !selectedFile}
@@ -403,13 +599,12 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
                                             <div className="relative w-full min-h-[500px] flex items-center justify-center p-6">
                                                 {!imageLoadError ? (
                                                     <>
-                                                        <Image
+                                                        {/* Use regular img tag to bypass Next.js Image optimization */}
+                                                        <img
                                                             src={generatedImage}
                                                             alt="Your AI Masterpiece"
-                                                            width={600}
-                                                            height={600}
                                                             className="max-w-full max-h-full object-contain rounded-2xl group-hover:scale-105 transition-transform duration-500 shadow-xl"
-                                                            style={{ maxHeight: '600px' }}
+                                                            style={{ maxHeight: '600px', maxWidth: '600px' }}
                                                             onLoad={() => console.log('Image loaded successfully')}
                                                             onError={(e) => {
                                                                 console.error('Image load error:', e);
