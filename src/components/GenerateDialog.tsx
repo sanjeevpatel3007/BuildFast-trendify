@@ -384,7 +384,7 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
                                             <Loader2 className="w-16 h-16 animate-spin text-yellow-400" />
                                             <span className="font-black text-white text-xl drop-shadow-lg">🎨 AI is painting your masterpiece...</span>
                                         </div>
-                                        <div className="flex-1 bg-white rounded-3xl border-6 border-emerald-500 min-h-[500px] overflow-hidden shadow-2xl">
+                                        <div className="flex-1 bg-white rounded-3xl border-6 border-emerald-500 min-h-[300px] overflow-hidden shadow-2xl">
                                             <Skeleton className="w-full h-full rounded-3xl bg-blue-200 animate-pulse" />
                                         </div>
                                         <div className="mt-10">
