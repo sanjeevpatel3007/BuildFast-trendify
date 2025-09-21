@@ -46,12 +46,13 @@ function GenerateDialog({ trend, isOpen, onClose }: GenerateDialogProps) {
             setFloatingElements(elements);
             
             // Debug: Log trend data when dialog opens
-            // console.log(' Dialog opened for trend:', {
-            //     title: trend.title,
-            //     prompt: trend.prompt,
-            //     hasPrompt: !!trend.prompt,
-            //     promptLength: trend.prompt?.length || 0
-            // });
+            console.log('🎭 Dialog opened for trend:', {
+                title: trend.title,
+                prompt: trend.prompt,
+                hasPrompt: !!trend.prompt,
+                promptLength: trend.prompt?.length || 0,
+                fullTrend: trend
+            });
         }
     }, [isOpen, trend]);
 
@@ -219,15 +220,34 @@ const handleGenerateSeedream = async () => {
   
     try {
       // 2. Build request body for Seedream
+      let imageUrls: string[] = [];
+      
+      if (selectedFile) {
+        // Convert uploaded file to base64
+        console.log("🔄 Converting uploaded file to base64...");
+        const imageBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(selectedFile);
+        });
+        imageUrls = [imageBase64];
+        console.log("✅ Converted file to base64, length:", imageBase64.length);
+      } else {
+        // Use demo image
+        imageUrls = ["https://storage.googleapis.com/falserverless/example_inputs/seedream4_edit_input_1.png"];
+        console.log("📸 Using demo image");
+      }
+
       const requestBody: {
         prompt: string;
         imageUrls: string[];
       } = {
         prompt: trend.prompt,
-        // ✅ Use uploaded file or demo image
-        imageUrls: selectedFile 
-          ? [URL.createObjectURL(selectedFile)] // Use uploaded file (will be converted to demo image server-side)
-          : ["https://storage.googleapis.com/falserverless/example_inputs/seedream4_edit_input_1.png"], // Demo image
+        imageUrls: imageUrls,
       };
   
       // 3. Call your Next.js API route
@@ -268,8 +288,10 @@ const handleGenerateSeedream = async () => {
 
 // ✅ Main generate function - switches between APIs
 const handleGenerate = () => {
-    console.log(' Using API:', selectedAPI);
-    console.log(' Prompt from trend:', trend.prompt);
+    console.log('🎯 Using API:', selectedAPI);
+    console.log('📝 Prompt from trend:', trend.prompt);
+    console.log('📝 Prompt length:', trend.prompt?.length || 0);
+    console.log('📝 Full trend object:', trend);
     
     if (selectedAPI === 'google') {
         handleGenerateGoogle();
