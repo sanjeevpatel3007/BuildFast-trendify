@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Zap, Star, Heart, ArrowLeft, Search, Filter, Shuffle } from 'lucide-react';
+import { Sparkles, Zap, Star, Heart, ArrowLeft, Search, Filter, Shuffle, Copy, Wand2, Users, User, UserCheck, Baby } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import GenerateDialog from './GenerateDialog';
 import Image from 'next/image';
@@ -35,10 +35,12 @@ interface AllTrendsProps {
 
 const AllTrends = ({ onBack }: AllTrendsProps) => {
   const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+  const [promptPopup, setPromptPopup] = useState<{ isOpen: boolean; trend: Trend | null }>({ isOpen: false, trend: null });
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // Use data from data.json
   const trends: Trend[] = trendsData;
@@ -61,9 +63,44 @@ const AllTrends = ({ onBack }: AllTrendsProps) => {
     setIsDialogOpen(true);
   };
 
-  const filteredTrends = trends.filter(trend => 
-    trend.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleRevealPrompt = (trend: Trend) => {
+    setPromptPopup({ isOpen: true, trend });
+  };
+
+  const handleCopyPrompt = async (prompt: string, trendId: string) => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      setCopiedPrompt(trendId);
+      setTimeout(() => setCopiedPrompt(null), 2000);
+
+      // Show a brief toast notification
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+      toast.textContent = 'Prompt copied to clipboard!';
+      document.body.appendChild(toast);
+
+      // Animate in
+      setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+      }, 100);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    } catch (err) {
+      console.error('Failed to copy prompt:', err);
+    }
+  };
+
+  const filteredTrends = trends.filter(trend => {
+    const matchesSearch = trend.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || trend.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden relative bg-gradient-to-br from-purple-400 via-pink-400 to-orange-300">
@@ -94,13 +131,13 @@ const AllTrends = ({ onBack }: AllTrendsProps) => {
           <defs>
             <pattern id="geometricGrid" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
               {/* Lines */}
-              <path d="M 0,20 l 20,0" stroke="#fff" strokeWidth="0.5"/>
-              <path d="M 0,0 l 0,20" stroke="#fff" strokeWidth="0.5"/>
+              <path d="M 0,20 l 20,0" stroke="#fff" strokeWidth="0.5" />
+              <path d="M 0,0 l 0,20" stroke="#fff" strokeWidth="0.5" />
               {/* Rectangles */}
-              <rect x="2" y="2" width="6" height="4" fill="none" stroke="#fff" strokeWidth="0.3"/>
-              <rect x="12" y="12" width="6" height="4" fill="none" stroke="#fff" strokeWidth="0.3"/>
+              <rect x="2" y="2" width="6" height="4" fill="none" stroke="#fff" strokeWidth="0.3" />
+              <rect x="12" y="12" width="6" height="4" fill="none" stroke="#fff" strokeWidth="0.3" />
               {/* Squares */}
-              <rect x="8" y="8" width="4" height="4" fill="none" stroke="#fff" strokeWidth="0.4"/>
+              <rect x="8" y="8" width="4" height="4" fill="none" stroke="#fff" strokeWidth="0.4" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#geometricGrid)" />
@@ -148,18 +185,50 @@ const AllTrends = ({ onBack }: AllTrendsProps) => {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-3 lg:pl-4 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 lg:h-5 lg:w-5 text-white/60" />
+          {/* Search Bar and Category Filter */}
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start lg:items-center">
+            {/* Search Bar */}
+            <div className="relative max-w-md w-full lg:w-auto">
+              <div className="absolute inset-y-0 left-0 pl-3 lg:pl-4 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 lg:h-5 lg:w-5 text-white/60" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search trending styles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 lg:pl-11 pr-3 lg:pr-4 py-2 lg:py-3 bg-white/20 backdrop-blur-sm border-2 border-white/30 rounded-2xl text-white placeholder-white/60 font-medium focus:outline-none focus:ring-4 focus:ring-yellow-400/50 focus:border-yellow-400 transition-all duration-300 text-sm lg:text-base"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Search trending styles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 lg:pl-11 pr-3 lg:pr-4 py-2 lg:py-3 bg-white/20 backdrop-blur-sm border-2 border-white/30 rounded-2xl text-white placeholder-white/60 font-medium focus:outline-none focus:ring-4 focus:ring-yellow-400/50 focus:border-yellow-400 transition-all duration-300 text-sm lg:text-base"
-            />
+
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2 lg:gap-3">
+              {[
+                { id: 'all', label: 'All Prompts', icon: Users },
+                { id: 'men', label: 'Men', icon: User },
+                { id: 'women', label: 'Women', icon: UserCheck },
+                { id: 'couple', label: 'Couple', icon: Heart },
+                { id: 'kids', label: 'Kids', icon: Baby }
+              ].map((category) => {
+                const IconComponent = category.icon;
+                const isSelected = selectedCategory === category.id;
+                
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full text-sm lg:text-base font-semibold transition-all duration-300 transform hover:scale-105 ${
+                      isSelected
+                        ? 'bg-purple-500 text-white shadow-lg'
+                        : 'bg-white/20 text-white/80 hover:bg-white/30 hover:text-white'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4 lg:w-5 lg:h-5" />
+                    <span className="hidden sm:inline">{category.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -170,53 +239,101 @@ const AllTrends = ({ onBack }: AllTrendsProps) => {
           {filteredTrends.map((trend, index) => (
             <div
               key={trend.id}
-              className={`group cursor-pointer transform transition-all duration-700 hover:scale-110 hover:z-30 relative ${
-                index % 3 === 0 ? 'rotate-1 hover:rotate-0' : 
-                index % 3 === 1 ? '-rotate-1 hover:rotate-0' : 
-                'rotate-0 hover:rotate-1'
-              }`}
+              className={`group cursor-pointer transform transition-all duration-700 hover:scale-110 hover:z-30 relative ${index % 3 === 0 ? 'rotate-1 hover:rotate-0' :
+                index % 3 === 1 ? '-rotate-1 hover:rotate-0' :
+                  'rotate-0 hover:rotate-1'
+                }`}
               onClick={() => handleImageClick(trend)}
-              onMouseEnter={() => setHoveredCard(trend.id)}
-              onMouseLeave={() => setHoveredCard(null)}
               style={{
                 animationDelay: `${index * 0.1}s`
               }}
             >
               {/* Card Container */}
               <div className="bg-white/10 backdrop-blur-sm rounded-3xl overflow-hidden border-3 border-white/30 group-hover:border-yellow-400 shadow-2xl group-hover:shadow-3xl transition-all duration-500 relative">
-                
+
                 {/* Image Container - 1:1 Aspect Ratio */}
-                <div className="aspect-square relative overflow-hidden">
+                <div className="h-[250px] md:h-[300px] relative overflow-hidden">
                   <Image
                     src={trend.image}
                     alt={trend.title}
                     fill
-                    className="object-cover group-hover:scale-125 transition-transform duration-700"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  
+
                   {/* Gradient Blur Overlay at Bottom */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-20 transition-opacity duration-300"></div>
-                  
-                
 
-                  {/* Hover Sparkles Effect */}
-                  {hoveredCard === trend.id && (
-                    <>
-                      <div className="absolute top-4 left-4 animate-pulse">
-                        <Sparkles className="w-6 h-6 text-yellow-400" />
+                  {/* Desktop Action Buttons - hover on desktop */}
+                  <div
+                    className={
+                      "hidden md:flex absolute bottom-0 left-0 right-0 p-4 flex-col gap-2 z-20 " +
+                      "md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 " +
+                      "bg-gradient-to-t from-black/60 via-black/30 to-transparent rounded-t-xl"
+                    }
+                  >
+                    {/* Reveal Prompt Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRevealPrompt(trend);
+                      }}
+                      className="w-full h-12 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl flex items-center justify-center hover:bg-green-400 hover:text-white transition-all duration-300 transform hover:scale-105 relative z-30"
+                      title="Reveal Prompt"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Copy className="w-4 h-4 text-white md:block hidden" />
+                        <span className="hidden md:inline">Reveal Prompt</span>
+                        <span className="md:hidden"></span>
                       </div>
-                      <div className="absolute bottom-4 right-4 animate-bounce" style={{ animationDelay: '0.5s' }}>
-                        <Star className="w-5 h-5 text-cyan-400" />
+                    </button>
+
+                    {/* Generate Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageClick(trend);
+                      }}
+                      className="w-full h-12 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl flex items-center justify-center hover:bg-purple-400 hover:text-white transition-all duration-300 transform hover:scale-105 relative z-30"
+                      title="Generate"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Wand2 className="w-4 h-4 text-white md:block hidden" />
+                        <span className="hidden md:inline">Try This Style</span>
+                        <span className="md:hidden">✨</span>
                       </div>
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-ping">
-                        <Heart className="w-8 h-8 text-pink-400" />
-                      </div>
-                    </>
-                  )}
-                  
-                  {/* Title Overlay - Bottom with Blur Effect */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className=" bg-transparent rounded-2xl px-2 py-1 border border-white/20 transform group-hover:scale-105 transition-all duration-300">
+                    </button>
+                  </div>
+                  {/* Mobile Action Buttons - icons only */}
+                  <div className="flex md:hidden absolute top-3 right-3 flex-col gap-2 z-30">
+                    {/* Reveal Prompt Icon */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRevealPrompt(trend);
+                      }}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center hover:bg-green-400 hover:text-white transition-all duration-300 transform hover:scale-110 relative z-40"
+                      title="Reveal Prompt"
+                    >
+                      <Copy className="w-5 h-5 text-white" />
+                    </button>
+
+                    {/* Generate Icon */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageClick(trend);
+                      }}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center hover:bg-purple-400 hover:text-white transition-all duration-300 transform hover:scale-110 relative z-40"
+                      title="Generate"
+                    >
+                      <Wand2 className="w-5 h-5 text-white" />
+                    </button>
+                  </div>
+
+
+                  {/* Title Overlay - Hidden on hover for desktop, always visible on mobile */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 md:group-hover:opacity-0 transition-opacity duration-300 z-10">
+                    <div className="bg-transparent rounded-2xl px-2 py-1 border border-white/20 transform group-hover:scale-105 transition-all duration-300">
                       <h3 className="text-white font-black text-md leading-tight line-clamp-2 drop-shadow-lg">
                         {trend.title}
                       </h3>
@@ -234,11 +351,11 @@ const AllTrends = ({ onBack }: AllTrendsProps) => {
               </div>
 
               {/* Floating Action Button */}
-              <div className="absolute -bottom-3 -right-3 opacity-0 group-hover:opacity-100 transform scale-0 group-hover:scale-100 transition-all duration-500 z-20">
+              {/* <div className="absolute -bottom-3 -right-3 opacity-0 group-hover:opacity-100 transform scale-0 group-hover:scale-100 transition-all duration-500 z-20">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-2xl animate-bounce border-4 border-white">
                   <Zap className="w-6 h-6 text-white" />
                 </div>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -302,6 +419,73 @@ const AllTrends = ({ onBack }: AllTrendsProps) => {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
         }
       `}</style>
+
+      {/* Prompt Popup */}
+      {promptPopup.isOpen && promptPopup.trend && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/30 rounded-3xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-black text-white flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-400 rounded-full flex items-center justify-center">
+                    <Copy className="w-4 h-4 text-black" />
+                  </div>
+                  AI Prompt
+                </h3>
+                <button
+                  onClick={() => setPromptPopup({ isOpen: false, trend: null })}
+                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-red-400 transition-colors duration-300"
+                >
+                  <span className="text-white text-lg">×</span>
+                </button>
+              </div>
+              <p className="text-white/80 mt-2 font-semibold">{promptPopup.trend.title}</p>
+            </div>
+
+            {/* Prompt Content */}
+            <div className="p-6">
+              <div className="bg-black/20 rounded-2xl p-4 border border-white/20">
+                <p className="text-white text-lg leading-relaxed whitespace-pre-wrap">
+                  {promptPopup.trend.prompt}
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="p-6 border-t border-white/20 flex gap-3">
+              <button
+                onClick={() => promptPopup.trend && handleCopyPrompt(promptPopup.trend.prompt, promptPopup.trend.id)}
+                className="flex-1 h-12 bg-green-400 hover:bg-green-500 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
+              >
+                {promptPopup.trend && copiedPrompt === promptPopup.trend.id ? (
+                  <>
+                    <div className="w-4 h-4 bg-black rounded-full animate-pulse"></div>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    Copy Prompt
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  if (promptPopup.trend) {
+                    setPromptPopup({ isOpen: false, trend: null });
+                    handleImageClick(promptPopup.trend);
+                  }
+                }}
+                className="flex-1 h-12 bg-purple-400 hover:bg-purple-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
+              >
+                <Wand2 className="w-4 h-4" />
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Generate Dialog */}
       {selectedTrend && (

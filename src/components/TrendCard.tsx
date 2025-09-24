@@ -10,14 +10,14 @@ interface TrendCardProps {
 
 function TrendCard({ trend, onClick }: TrendCardProps) {
   return (
-    <div className="relative w-64 h-64 m-4 cursor-pointer group">
+    <div className="relative m-4 cursor-pointer group">
       {/* Full image */}
       <div className="relative h-full w-full overflow-hidden rounded-xl">
         <Image
           src={trend.image}
           alt={trend.title}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-110 rounded-xl"
+          className="object-contain transition-transform duration-300 group-hover:scale-110 rounded-xl"
         />
 
         {/* Overlay: text + button */}

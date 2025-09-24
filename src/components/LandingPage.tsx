@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Zap, Image as ImageIcon, ArrowRight, Star, Heart, Smile } from 'lucide-react';
+import { Sparkles, Zap, Image as ImageIcon, ArrowRight, Star, Heart, Smile, Link } from 'lucide-react';
 // import Image from 'next/image';
 import { Button } from './ui/button';
 import GenerateDialog from './GenerateDialog';
@@ -224,6 +224,20 @@ const LandingPage = ({ onShowGallery }: LandingPageProps) => {
             <Heart className="w-6 h-6 text-white" />
           </div>
         </div>
+
+        {/* Powered by Build Fast With AI */}
+        <div className="absolute bottom-8 left-44 z-50">
+          <a
+            href="https://buildfastwithai.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-black/70 text-white px-4 py-2 rounded-full shadow-lg hover:bg-black/90 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+          >
+            <span className="font-semibold text-sm">Powered by</span>
+            <span className="font-bold text-sm">Build Fast With AI</span>
+          </a>
+        </div>
+
       </div>
 
       {/* Custom CSS */}
